@@ -47,6 +47,15 @@ class BookmarksView extends View {
     );
     return markup;
   }
+
+  addHandlerLocalStorage(loadData, storeData) {
+    window.addEventListener('load', () => {
+      const data = loadData();
+      this.renderBookmarks(data);
+      return;
+    });
+    window.addEventListener('beforeunload', storeData);
+  }
 }
 
 export default new BookmarksView();

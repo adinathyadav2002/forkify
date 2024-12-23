@@ -127,6 +127,17 @@ export const removeFromBookmark = function () {
   state.bookmarks = state.bookmarks.filter(item => item.id != state.recipe.id);
 };
 
+// to load data from local storage
+export const loadData = function () {
+  state.bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
+  return state.bookmarks;
+};
+
+// to store data to local storage
+export const storeData = function () {
+  localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+};
+
 // HELPER FUNCTION
 const getRecipeIndex = function (id) {
   return state.searchResult.data.findIndex(item => item.id === id);

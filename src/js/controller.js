@@ -87,6 +87,11 @@ const controlPagination = function () {
 
 // controlRecipe();
 const init = function () {
+  bookmarksView.addHandlerLocalStorage(
+    model.loadData,
+    model.storeData,
+    model.state.bookmarks
+  );
   searchView.addHandlerSearch(controlSearchRecipes);
   paginationView.addHandlerPages(
     model.nextPage,
