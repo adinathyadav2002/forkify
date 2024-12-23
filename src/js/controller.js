@@ -4,6 +4,7 @@ import recipeView from './views/recipeView.js';
 import resultsView from './views/resultsView.js';
 import searchView from './views/searchView.js';
 import paginationView from './views/paginationView.js';
+import bookmarksView from './views/bookmarksView.js';
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
@@ -19,6 +20,10 @@ const controlRecipe = async function () {
     const id = window.location.hash.slice(1);
     if (!id) return;
 
+    //  0) Insetead of rendering the whole result just
+    //     update the changed result
+    resultsView.update(model.getResultPages());
+
     //  1) Render the spinner
     recipeView.renderSpinner(``);
 
@@ -30,7 +35,7 @@ const controlRecipe = async function () {
 
     //  3) Render the data got from API
     recipeView.render(model.state.recipe);
-    console.log(model.state.recipe);
+    // console.log(model.state.recipe);
   } catch (err) {
     recipeView.renderError();
   }
@@ -51,25 +56,29 @@ const controlSearchRecipes = async function () {
     controlPagination();
 
     // RENDER DATE ACCORDING TO PAGE
-    const page = model.state.searchResult.page;
-
-    const data = model.state.searchResult.data.slice(
-      (page - 1) * 10,
-      page * 10
-    );
 
     // render data
-    resultsView.render(data);
+    resultsView.render(model.getResultPages());
   } catch (err) {
     console.log(err.message);
   }
 };
 
+const controlBookmarks = async function (flag) {
+  // add to bookmarks
+  if (flag) model.addToBookmark();
+  // remove from bookmarks
+  if (!flag) model.removeFromBookmark();
+
+  // render bookmarks
+  bookmarksView.renderBookmarks(model.state.bookmarks);
+};
+
 const controlServings = function (servings) {
   model.updateServings(servings);
-  console.log(model.state.recipe);
   // render servings again
-  recipeView.render(model.state.recipe);
+
+  recipeView.update(model.state.recipe);
 };
 
 const controlPagination = function () {
@@ -78,14 +87,15 @@ const controlPagination = function () {
 
 // controlRecipe();
 const init = function () {
-  recipeView.addHandlerRender(controlRecipe);
   searchView.addHandlerSearch(controlSearchRecipes);
   paginationView.addHandlerPages(
     model.nextPage,
     model.previousPage,
     controlSearchRecipes
   );
+  recipeView.addHandlerRender(controlRecipe);
   recipeView.addHandlerUpdateServings(controlServings);
+  recipeView.addHandlerBookmark(controlBookmarks);
 };
 
 init();
